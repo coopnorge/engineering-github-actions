@@ -61,7 +61,7 @@ jobs:
           GOFLAGS= go install github.com/kisielk/errcheck@latest
       - name: Create default golangci-lint bin
       - name: Create default golangci-lint config if no config exists
-        if: ${{ inputs.golangciCreateDefault }}A very direct conversion.
+        if: ${{ inputs.golangciCreateDefault }}
         shell: bash
         working-directory: ${{ inputs.modulePath }}
         run: |
