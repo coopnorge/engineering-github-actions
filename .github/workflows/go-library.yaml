@@ -1,0 +1,147 @@
+on:
+  workflow_call:
+    inputs:
+      goVersion:
+        type: string
+        required: false
+        default: "1.17.8"
+      GOBIN:
+        type: string
+        required: true
+      GOPATH:
+        type: string
+        required: true
+      GOROOT:
+        type: string
+        required: true
+      MAIN_APP_ENTRY:
+        type: string
+        required: false
+        default: ""
+        description: |
+          Directory path where app executable stored, a small main function -
+          entry point
+      modulePath:
+        type: string
+        required: true
+      BINARY_NAME:
+        type: string
+        required: true
+      GOFLAGS:
+        type: string
+        required: false
+        default: -mod=vendor
+      golangciCreateDefault:
+        type: boolean
+        required: false
+        default: true
+      golangciDockerLabel:
+        type: string
+        required: false
+        default: v1.44.2@sha256:68e9e5f3822ec3aff426959268f522a2b6be58adf8c87c5eeb8434bbe3da050f
+
+env:
+  GOBIN: ${{ inputs.GOBIN }}
+  GOROOT: ${{ inputs.GOROOT }}
+  GOPATH: ${{ inputs.GOPATH }}
+  GOFLAGS: ${{ inputs.GOFLAGS }}
+
+jobs:
+  check:
+    name: Lint and check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-go@v2
+        with:
+          go-version: ${{ inputs.goVersion }}
+      - name: Install tooling
+        run: |
+          GOFLAGS= go install golang.org/x/lint/golint@latest
+          GOFLAGS= go install github.com/kisielk/errcheck@latest
+      - name: Create default golangci-lint bin
+      - name: Create default golangci-lint config if no config exists
+        if: ${{ inputs.golangciCreateDefault }}A very direct conversion.
+        shell: bash
+        working-directory: ${{ inputs.modulePath }}
+        run: |
+          configs=( .golangci.{yml,yaml,toml,json} )
+          declare -p configs
+          found=false
+          use_config="${configs[0]}"
+          for config in "${configs[@]}";
+          do
+            test -e "${config}" && \
+              found=true && \
+              use_config="${config}" && \
+              break;
+          done;
+          declare -p found use_config
+          if ! "${found}"; then
+              echo >&2 "Config not found, writing default config to ${use_config}"
+              cat > "${use_config}" <<'EOF'
+          linters:
+            disable-all: true
+            enable:
+            - govet
+            - golint
+            - errcheck
+          issues:
+            exclude-use-default: false
+            exclude-rules:
+            - path: _test[.]go
+              linters:
+                - errcheck
+          EOF
+            test "${?}" == "0" || exit 1
+          fi
+          readlink -f "${use_config}"
+          grep -H . "${use_config}"
+      - name: Run golangci-lint
+        working-directory: ${{ inputs.modulePath }}
+        run: |
+          docker run --rm \
+            -v $(pwd):/app -w /app \
+            docker.io/golangci/golangci-lint:${{ inputs.golangciDockerLabel }} \
+            golangci-lint run -v ./...
+
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-go@v2
+        with:
+          go-version: ${{ inputs.goVersion }}
+      - name: go test with coverage and race check
+        working-directory: ${{ inputs.modulePath }}
+        run: go test -race -cover ./...
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-go@v2
+        with:
+          go-version: ${{ inputs.goVersion }}
+      - name: Building binary
+        env:
+          GIT_COMMIT: ${{ github.sha }}
+          BINARY_NAME: ${{ inputs.BINARY_NAME }}
+        working-directory: ${{ inputs.modulePath }}
+        shell: bash
+        run: |
+          CGO_ENABLED=0 \
+          GOOS=linux \
+          GOARCH=amd64 \
+          go build \
+            -a \
+            -installsuffix cgo \
+            -v \
+            -o ${{ inputs.BINARY_NAME }} \
+            -ldflags "\
+              -X main.commitID=${GIT_COMMIT} \
+              -X main.name=${{ inputs.BINARY_NAME }} \
+              -X 'main.buildDate=$(date)'" \
+            ${{ inputs.MAIN_APP_ENTRY }}
