@@ -5,15 +5,6 @@ on:
         type: string
         required: false
         default: "1.17.8"
-      GOBIN:
-        type: string
-        required: true
-      GOPATH:
-        type: string
-        required: true
-      GOROOT:
-        type: string
-        required: true
       MAIN_APP_ENTRY:
         type: string
         required: false
@@ -41,9 +32,6 @@ on:
         default: v1.44.2@sha256:68e9e5f3822ec3aff426959268f522a2b6be58adf8c87c5eeb8434bbe3da050f
 
 env:
-  GOBIN: ${{ inputs.GOBIN }}
-  GOROOT: ${{ inputs.GOROOT }}
-  GOPATH: ${{ inputs.GOPATH }}
   GOFLAGS: ${{ inputs.GOFLAGS }}
 
 jobs:
