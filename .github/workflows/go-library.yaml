@@ -29,7 +29,7 @@ on:
       golangciDockerLabel:
         type: string
         required: false
-        default: v1.44.2@sha256:68e9e5f3822ec3aff426959268f522a2b6be58adf8c87c5eeb8434bbe3da050f
+        default: latest
 
 env:
   GOFLAGS: ${{ inputs.GOFLAGS }}
@@ -49,49 +49,14 @@ jobs:
           GOFLAGS= go install github.com/kisielk/errcheck@latest
       - name: Create default golangci-lint bin
       - name: Create default golangci-lint config if no config exists
+        uses: "../actions/create-golangci-config"
         if: ${{ inputs.golangciCreateDefault }}
-        shell: bash
-        working-directory: ${{ inputs.modulePath }}
-        run: |
-          configs=( .golangci.{yml,yaml,toml,json} )
-          declare -p configs
-          found=false
-          use_config="${configs[0]}"
-          for config in "${configs[@]}";
-          do
-            test -e "${config}" && \
-              found=true && \
-              use_config="${config}" && \
-              break;
-          done;
-          declare -p found use_config
-          if ! "${found}"; then
-              echo >&2 "Config not found, writing default config to ${use_config}"
-              cat > "${use_config}" <<'EOF'
-          linters:
-            disable-all: true
-            enable:
-            - govet
-            - golint
-            - errcheck
-          issues:
-            exclude-use-default: false
-            exclude-rules:
-            - path: _test[.]go
-              linters:
-                - errcheck
-          EOF
-            test "${?}" == "0" || exit 1
-          fi
-          readlink -f "${use_config}"
-          grep -H . "${use_config}"
       - name: Run golangci-lint
-        working-directory: ${{ inputs.modulePath }}
-        run: |
-          docker run --rm \
-            -v $(pwd):/app -w /app \
-            docker.io/golangci/golangci-lint:${{ inputs.golangciDockerLabel }} \
-            golangci-lint run -v ./...
+        uses: golangci/golangci-lint-action@b517f99ae23d86ecc4c0dec08dcf48d2336abc29
+        with:
+          version: ${{ inputs.golangciVersion }}
+          working-directory: ${{ inputs.modulePath }}
+          args: -v
 
   test:
     name: Test
