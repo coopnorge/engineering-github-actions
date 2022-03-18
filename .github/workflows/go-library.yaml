@@ -43,11 +43,6 @@ jobs:
       - uses: actions/setup-go@f6164bd8c8acb4a71fb2791a8b6c4024ff038dab
         with:
           go-version: ${{ inputs.goVersion }}
-      - name: Install tooling
-        run: |
-          GOFLAGS= go install golang.org/x/lint/golint@latest
-          GOFLAGS= go install github.com/kisielk/errcheck@latest
-      - name: Create default golangci-lint bin
       - name: Create default golangci-lint config if no config exists
         uses: "../actions/create-golangci-config"
         if: ${{ inputs.golangciCreateDefault }}
