@@ -79,22 +79,9 @@ jobs:
         with:
           go-version: ${{ inputs.goVersion }}
       - name: Building binary
-        env:
-          GIT_COMMIT: ${{ github.sha }}
-          BINARY_NAME: ${{ inputs.BINARY_NAME }}
-        working-directory: ${{ inputs.modulePath }}
-        shell: bash
-        run: |
-          CGO_ENABLED=0 \
-          GOOS=linux \
-          GOARCH=amd64 \
-          go build \
-            -a \
-            -installsuffix cgo \
-            -v \
-            -o ${{ inputs.BINARY_NAME }} \
-            -ldflags "\
-              -X main.commitID=${GIT_COMMIT} \
-              -X main.name=${{ inputs.BINARY_NAME }} \
-              -X 'main.buildDate=$(date)'" \
-            ${{ inputs.MAIN_APP_ENTRY }}
+        uses: "../actions/go-build-static"
+        with:
+          git-commit: ${{ github.sha }}
+          binary-name: ${{ inputs.BINARY_NAME }}
+          working-directory: ${{ inputs.modulePath }}
+          entry-point: ${{ inputs.MAIN_APP_ENTRY }}
