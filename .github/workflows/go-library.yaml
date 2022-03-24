@@ -1,6 +1,15 @@
 on:
   workflow_call:
     inputs:
+      # Required
+      binary-name:
+        type: string
+        required: true
+      working-directory:
+        type: string
+        required: true
+
+      # Optional
       go-version:
         type: string
         required: false
@@ -12,12 +21,6 @@ on:
         description: |
           Directory path where app executable stored, a small main function -
           entry point
-      module-path:
-        type: string
-        required: true
-      binary-name:
-        type: string
-        required: true
       GOFLAGS:
         type: string
         required: false
@@ -50,7 +53,7 @@ jobs:
         uses: golangci/golangci-lint-action@b517f99ae23d86ecc4c0dec08dcf48d2336abc29
         with:
           version: ${{ inputs.golangci-version }}
-          working-directory: ${{ inputs.module-path }}
+          working-directory: ${{ inputs.working-directory }}
           args: -v
 
   test:
@@ -62,7 +65,7 @@ jobs:
         with:
           go-version: ${{ inputs.goVersion }}
       - name: go test with coverage and race check
-        working-directory: ${{ inputs.module-path }}
+        working-directory: ${{ inputs.working-directory }}
         run: go test -race -cover ./...
 
   build:
@@ -78,5 +81,5 @@ jobs:
         with:
           git-commit: ${{ github.sha }}
           binary-name: ${{ inputs.binary-name }}
-          working-directory: ${{ inputs.module-path }}
+          working-directory: ${{ inputs.working-directory }}
           entry-point: ${{ inputs.entry-point }}
