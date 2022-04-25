@@ -91,7 +91,7 @@ jobs:
       - name: Set pull request to auto-merge
         if: ${{ matrix.auto-merge == 'true' }}
         # v1.2.0
-        uses: peter-evans/enable-pull-request-automerge@21d45e1c52f5d111d2019b5d33f953ed2e735c46
+        uses: peter-evans/enable-pull-request-automerge@4e255250f89d040c7b85bb434f997079243a9fa7
         with:
           token: ${{ steps.generate_token.outputs.token }}
           pull-request-number: ${{ steps.cpr.outputs.pull-request-number }}
