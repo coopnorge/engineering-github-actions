@@ -9,7 +9,8 @@ on:
         description: |
           on line json build matrix in the form of
           [ { "environment":"env name","auto-merge": "true/false","auto-approve":"true/false"},  { "environment":"env name","auto-merge": "true/false","auto-approve":"true/false"} ]
-          note: all the values of the keys will be accessable in the script environment, for example you can point to the env variable $environment
+          note: all the values of the keys will be accessable in the script environment, for example you can point to the env variable $environment but be aware the rules for
+          environment variables apply, for example you can not have dashes in the name or else the variable will not load correctly when you use it in the script.
       working-directory:
         required: false
         type: string
