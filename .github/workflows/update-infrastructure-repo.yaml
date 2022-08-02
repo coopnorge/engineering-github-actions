@@ -8,7 +8,7 @@ on:
         type: string
         description: |
           on line json build matrix in the form of
-          [ { "environment":"env name","auto-merge": "true/false","auto-approve":"true/false"},  { "environment":"env name","auto-merge": "true/false","auto-approve":"true/false"} ]
+          [ { "environment":"env name","auto-merge": "true/false","auto-approve":"true/false"},  { "environment":"env name","auto-merge": "true/false","auto-approve":"true/false"}, { "merge-method": "squash/merge/rebase"} ]
           note: all the values of the keys will be accessable in the script environment, for example you can point to the env variable $environment but be aware the rules for
           environment variables apply, for example you can not have dashes in the name or else the variable will not load correctly when you use it in the script.
       working-directory:
@@ -52,7 +52,6 @@ jobs:
           app_id: 172868
           private_key: ${{ secrets.write-back-app-pem }}
 
-
       - name: Clone the repostory
         # v3.0.0
         uses: actions/checkout@v3
@@ -88,7 +87,6 @@ jobs:
           labels: |
             automated pr
 
-
       - name: Set pull request to auto-merge
         if: ${{ matrix.auto-merge == 'true' }}
         # v1.2.0
@@ -97,8 +95,7 @@ jobs:
           token: ${{ steps.generate_token.outputs.token }}
           pull-request-number: ${{ steps.cpr.outputs.pull-request-number }}
           repository: ${{ inputs.source-github-repo }}
-          merge-method: squash
-
+          merge-method: ${{ matrix.merge-method || 'squash' }}
 
       - name: Approve Pull Request
         if: ${{ matrix.auto-approve == 'true' }}
