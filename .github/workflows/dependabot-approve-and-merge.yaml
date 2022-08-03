@@ -1,0 +1,41 @@
+---
+name: Approve and merge Dependabot PR
+on:
+  workflow_dispatch:
+    secrets:
+      reviewbot-github-token:
+        required: true
+        description: GitHub token with permission to approve the PR (usually ${{ secrets.REVIEWBOT_GITHUB_TOKEN}})
+
+permissions:
+  pull-requests: write
+
+jobs:
+  dependabot-fetch-metadata:
+    name: Fetch metadata of Dependabot update
+    runs-on: "ubuntu-latest"
+    if: ${{ github.actor == 'dependabot[bot]' }}
+    outputs:
+      package-ecosystem: ${{ steps.dependabot-metadata.outputs.packages-ecosystem }}
+    steps:
+      - id: dependabot-metadata
+        uses: dependabot/fetch-metadata@v1.3.3
+
+  merge-dependabot:
+    needs:
+      - dependabot-fetch-metadata
+    runs-on: "ubuntu-latest"
+    env:
+      GH_TOKEN: ${{ secrets.reviewbot-github-token }}
+    if: |
+      ${{ contains(needs.dependabot-fetch-metadata.outputs.package-ecosystem, 'docker') }} &&
+      (
+        ${{ contains(needs.dependabot-fetch-metadata.outputs.dependency-names, 'coopnorge/engineering-docker-images/e0/devtools-terraform-v1beta1' }} ||
+        ${{ contains(needs.dependabot-fetch-metadata.outputs.dependency-names, 'coopnorge/engineering-docker-images/e0/devtools-golang-v1beta1' }} ||
+        ${{ contains(needs.dependabot-fetch-metadata.outputs.dependency-names, 'coopnorge/engineering-docker-images/e0/devtools-kubernetes-v1beta1' }} ||
+        ${{ contains(needs.dependabot-fetch-metadata.outputs.dependency-names, 'coopnorge/engineering-docker-images/e0/poetry-python3.8' }} ||
+        ${{ contains(needs.dependabot-fetch-metadata.outputs.dependency-names, 'coopnorge/engineering-docker-images/e0/poetry-python3.10' }}
+      )
+    steps:
+      - run: |
+          gh pr review --approve --body "@dependabot squash and merge" --repo ${{ github.repository }} ${{ github.event.number }}
