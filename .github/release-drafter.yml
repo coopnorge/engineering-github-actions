@@ -1,0 +1,61 @@
+name-template: "v$RESOLVED_VERSION"
+tag-template: "v$RESOLVED_VERSION"
+change-template: "- $TITLE (#$NUMBER) @$AUTHOR"
+categories:
+  - title: "Major Changes"
+    labels:
+      - "major" # c6476b
+  - title: "Minor Changes"
+    labels:
+      - "feature"
+      - "enhancement"
+      - "refactoring"
+  - title: "Bugfixes"
+    labels:
+      - "bug"
+  - title: "Deprecations"
+    labels:
+      - "deprecated"
+exclude-labels:
+  - "bot:chronographer:skip"
+  - "skip-changelog"
+replacers:
+  # https://github.com/release-drafter/release-drafter/issues/569#issuecomment-645938155
+  - search: '(?:and )?@dependabot(?:\[bot\])?,?'
+    replace: ""
+version-resolver:
+  major:
+    labels:
+      - "major"
+  minor:
+    labels:
+      - "minor"
+      - "feature"
+  patch:
+    labels:
+      - "bug"
+      - "deprecated"
+  default: patch
+exclude-contributors:
+  - "dependabot"
+autolabeler:
+  - label: "skip-changelog"
+    title:
+      - "/autoupdate/"
+      - "/^chore/i"
+      - "/^doc/i"
+  - label: "bug"
+    title:
+      - "/^fix/i"
+  - label: "feature"
+    title:
+      - "/^feat/i"
+      - "/^feature/i"
+  - label: "deprecated"
+    title:
+      - "/^deprecate/i"
+  - labeld: "major"
+    body:
+      - "/BREAKING CHANGE:/"
+template: |
+  $CHANGES
