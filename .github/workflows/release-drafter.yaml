@@ -22,5 +22,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           config-name: release_drafter.yml
+          commitish: main
 
 # See: https://github.com/release-drafter/release-drafter
