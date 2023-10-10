@@ -2,19 +2,9 @@ name: Release Drafter
 
 on:
   workflow_call:
-    secrets:
-      GITHUB_TOKEN:
-        description: 'Token'
-        required: true
-
-permissions:
-  contents: read
 
 jobs:
   update-release-draft:
-    permissions:
-      contents: write
-      pull-requests: write
     runs-on: ubuntu-latest
     steps:
       - uses: release-drafter/release-drafter@v5
