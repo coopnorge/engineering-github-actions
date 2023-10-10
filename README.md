@@ -32,7 +32,7 @@ jobs:
               secrets: inherit
 ```
 
-2. Create a `.github/release-drafter.yml` file in your repository
+2. **OPTIONAL:** Create a `.github/release-drafter.yml` file in your repository
 ```yaml
 __extends: coopnorge/engineering-github-actions
 ```
