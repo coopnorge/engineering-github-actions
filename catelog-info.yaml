@@ -1,0 +1,14 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: engineering-github-action-release-drafter
+  title: Create draft releases from pull requests
+  description: |
+    Create draft releases from pull requests
+  annotations:
+    github.com/project-slug: coopnorge/engineering-github-action
+    backstage.io/techdocs-ref: dir:.
+spec:
+  type: library
+  lifecycle: production
+  owner: engineering

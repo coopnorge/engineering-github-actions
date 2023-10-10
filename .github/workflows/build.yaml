@@ -1,0 +1,21 @@
+---
+on:
+  pull_request:
+jobs:
+  techdocs:
+    permissions:
+      contents: read
+      id-token: write
+      packages: read
+    name: TechDocs
+    uses: coopnorge/github-workflow-techdocs/.github/workflows/techdocs.yaml@v0
+
+  build:
+    if: always()
+    needs:
+      - techdocs
+    runs-on: ubuntu-latest
+    steps:
+      - run: exit 1
+        if: |
+          needs.techdocs.result == 'failure'
