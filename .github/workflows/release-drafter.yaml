@@ -2,6 +2,10 @@ name: Release Drafter
 
 on:
   workflow_call:
+    secrets:
+      GITHUB_TOKEN:
+        description: 'Token'
+        required: true
 
 jobs:
   update-release-draft:
