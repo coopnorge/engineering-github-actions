@@ -10,5 +10,5 @@ metadata:
     backstage.io/techdocs-ref: dir:.
 spec:
   type: library
-  lifecycle: production
+  lifecycle: experimental
   owner: engineering
