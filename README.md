@@ -19,13 +19,17 @@ on:
       - main
   pull_request:
     types:
-      - open
+      - opened
       - reopened
       - synchronize
+      - edited
 permissions:
   contents: read
 jobs:
   release-draft:
+    permissions:
+      pull-requests: write
+      contents: write
     uses: >-
       coopnorge/engineering-github-actions/.github/workflows/release-drafter.yaml@main
     secrets: inherit
