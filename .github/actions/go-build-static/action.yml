@@ -1,0 +1,35 @@
+name: Build static Go binary
+description: Builds a static Go binary
+inputs:
+  git-commit:
+    description: Git commit to embed in binary
+    required: true
+  binary-name:
+    description: Filename for built binary
+    required: true
+  working-directory:
+    required: false
+    description: Working directory within which to run the build command
+    default: "."
+  entry-point:
+    required: true
+    description: Application entrypoint to build
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: |
+        CGO_ENABLED=0 \
+        GOOS=linux \
+        GOARCH=amd64 \
+        go build \
+          -a \
+          -installsuffix cgo \
+          -v \
+          -o ${{ inputs.binary-name }} \
+          -ldflags "\
+            -X main.commitID=${{ inputs.git-commit }} \
+            -X main.name=${{ inputs.binary-name }} \
+            -X 'main.buildDate=$(date)'" \
+          ${{ inputs.entry-point }}

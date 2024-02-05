@@ -1,0 +1,5 @@
+name: Check golangci config
+description: Create default config for golangci if no config is found
+runs:
+  using: node16
+  main: index.js
