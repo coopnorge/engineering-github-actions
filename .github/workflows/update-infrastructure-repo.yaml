@@ -55,7 +55,7 @@ jobs:
         with:
           app-id: 172868
           private-key: ${{ secrets.write-back-app-pem }}
-
+          owner: coopnorge
       - name: Clone the repostory
         # v3.0.0
         uses: actions/checkout@v4
