@@ -88,7 +88,7 @@ jobs:
         with:
           path: ${{ inputs.working-directory }}
           token: ${{ steps.generate_token.outputs.token }}
-          commit-message: Update infrastructure ${{ matrix.environment }} to ${{ github.sha }}
+          commit-message: Update infrastructure ${{ matrix.environment }} to ${{ inputs.service }}:${{ github.sha }}
           title: Update infrastructure ${{ matrix.environment }} to ${{ inputs.service }}:${{ github.sha }}
           committer: GitHub <noreply@github.com>
           author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
