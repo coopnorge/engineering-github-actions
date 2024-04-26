@@ -101,6 +101,8 @@ jobs:
 
           labels: |
             automated pr
+            service:${{ inputs.service }}
+            environment:${{ matrix.environment }}
 
       - name: Set pull request to auto-merge
         if: ${{ matrix.auto-merge == 'true' }}
