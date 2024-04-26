@@ -30,7 +30,7 @@ on:
       service:
         required: false
         type: string
-        default: ""
+        default: "service"
 
     secrets:
       approve-pr-token:
