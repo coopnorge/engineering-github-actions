@@ -51,7 +51,7 @@ jobs:
       - name: Generate token for writeback to pr
         id: generate_token
         # v1.5.1
-        uses: actions/create-github-app-token@v1.9.3
+        uses: actions/create-github-app-token@v1.10.0
         with:
           app-id: 172868
           private-key: ${{ secrets.write-back-app-pem }}
