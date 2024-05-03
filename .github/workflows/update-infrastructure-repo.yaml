@@ -100,7 +100,7 @@ jobs:
             ${{ github.event.head_commit.message }}
 
           labels: |
-            automated pr
+            deployment
             service:${{ inputs.service }}
             environment:${{ matrix.environment }}
 
