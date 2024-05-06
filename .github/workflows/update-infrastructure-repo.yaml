@@ -88,8 +88,8 @@ jobs:
         with:
           path: ${{ inputs.working-directory }}
           token: ${{ steps.generate_token.outputs.token }}
-          commit-message: Update infrastructure ${{ matrix.environment }} to ${{ inputs.service }}:${{ github.sha }}
-          title: Update infrastructure ${{ matrix.environment }} to ${{ inputs.service }}:${{ github.sha }}
+          commit-message: Bump ${{ inputs.service }} to ${{ github.sha }} in ${{ matrix.environment }}
+          title: Bump ${{ inputs.service }} to ${{ github.sha }} in ${{ matrix.environment }}
           committer: GitHub <noreply@github.com>
           author: GitHub <noreply@github.com>
           branch: ${{ steps.set-branch-name.outputs.BRANCH }}
