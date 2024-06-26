@@ -162,5 +162,5 @@ jobs:
           # Extract the numbers from the JSON file and iterate over them
           jq -c '.[].number' old-prs.json | while read -r number; do
               # Close the old PR, while leaving a comment that it was superseded by the PR
-              gh pr close "$number" --comment "Superseded by #${{ steps.cpr.outputs.pull-request-number }}." --repo "${{ github.server_url }}/${{ inputs.source-github-repo }}"
+              gh pr close "$number" --comment "Superseded by #${{ steps.cpr.outputs.pull-request-number }}." --delete-branch --repo "${{ github.server_url }}/${{ inputs.source-github-repo }}"
           done
