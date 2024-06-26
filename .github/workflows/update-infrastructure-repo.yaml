@@ -34,7 +34,7 @@ on:
       close-existing-prs:
         required: false
         type: boolean
-        default: false
+        default: true
         description: If close-existing-prs is true, this workflow will look up existing open PR's for the same environment and service, and close them. This will leave you with only 1 PR per service/environment-combination.
 
     secrets:
@@ -100,7 +100,7 @@ jobs:
           branch: ${{ steps.set-branch-name.outputs.BRANCH }}
           delete-branch: true
           body: |
-            Changes from ${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}
+            Changes from ${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}
 
             ${{ github.event.head_commit.message }}
 
