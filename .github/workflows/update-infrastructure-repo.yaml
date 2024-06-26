@@ -153,11 +153,11 @@ jobs:
 
           # List all open PRs for this service/environment-combination
           gh pr list --label "service:${{ inputs.service }}" --label "environment:${{ matrix.environment }}" --label deployment --state=open --app 'writebackinpr' --repo "${{ github.server_url }}/${{ inputs.source-github-repo }}" --json number > open-prs.json
-          cat open-prs.json
+          cat open-prs.json | jq
 
           # Remove the current PR from the list, to avoid closing the PR we just created
           jq -c '[.[] | select (.number != '"${{ steps.cpr.outputs.pull-request-number }}"')]' open-prs.json > old-prs.json
-          cat old-prs.json
+          cat old-prs.json | jq
 
           # Extract the numbers from the JSON file and iterate over them
           jq -c '.[].number' old-prs.json | while read -r number; do
