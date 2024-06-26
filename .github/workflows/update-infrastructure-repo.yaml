@@ -31,6 +31,11 @@ on:
         required: false
         type: string
         default: "service"
+      close-existing-prs:
+        required: false
+        type: boolean
+        default: false
+        description: If close-existing-prs is true, this workflow will look up existing open PR's for the same environment and service, and close them. This will leave you with only 1 PR per service/environment-combination.
 
     secrets:
       approve-pr-token:
@@ -122,3 +127,40 @@ jobs:
           github-token: ${{ secrets.approve-pr-token }}
           number: ${{ steps.cpr.outputs.pull-request-number }}
           repo: ${{ inputs.source-github-repo }}
+
+      - name: Close existing Pull-requests
+        if: ${{ inputs.close-existing-prs }}
+        env:
+          GH_TOKEN: ${{ steps.generate_token.outputs.token }}
+        run: |
+          # Saner programming environment. Turns common developer mistakes into errors.
+          set -eu -o pipefail
+
+          # Enable debug-logging, prints every command before running it
+          set -x
+
+          if [[ "${{ inputs.service }}" == "" || "${{ inputs.service }}" == "service" ]]; then
+              echo "No explicit service set, not closing old existing pull-requests"
+              exit 0
+          fi
+
+          cleanup() {
+            rm -f open-prs.json || :
+            rm -f old-prs.json || :
+          }
+          trap cleanup EXIT
+
+
+          # List all open PRs for this service/environment-combination
+          gh pr list --label "service:${{ inputs.service }}" --label "environment:${{ matrix.environment }}" --label deployment --state=open --app 'writebackinpr' --repo "${{ github.server_url }}/${{ inputs.source-github-repo }}" --json number > open-prs.json
+          cat open-prs.json | jq
+
+          # Remove the current PR from the list, to avoid closing the PR we just created
+          jq -c '[.[] | select (.number != '"${{ steps.cpr.outputs.pull-request-number }}"')]' open-prs.json > old-prs.json
+          cat old-prs.json | jq
+
+          # Extract the numbers from the JSON file and iterate over them
+          jq -c '.[].number' old-prs.json | while read -r number; do
+              # Close the old PR, while leaving a comment that it was superseded by the PR
+              gh pr close "$number" --comment "Superseded by #${{ steps.cpr.outputs.pull-request-number }}." --repo "${{ github.server_url }}/${{ inputs.source-github-repo }}"
+          done
