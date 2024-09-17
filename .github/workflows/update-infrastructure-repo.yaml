@@ -31,6 +31,10 @@ on:
         required: false
         type: string
         default: "service"
+      version:
+        required: false
+        type: string
+        description: Version to use in commit message and PR title. If not provided, git sha is used.
       close-existing-prs:
         required: false
         type: boolean
@@ -86,6 +90,16 @@ jobs:
             echo "BRANCH=update-${{ matrix.environment }}-to-${{ github.sha }}" >> $GITHUB_OUTPUT
           fi
 
+      - name: Set commit message
+        id: set-commit-message
+        run: |
+          if [ "${{ inputs.version }}" != "" ]
+          then
+            echo "COMMIT_MESSAGE=Bump \`${{ inputs.service }}\` to version \`${{ inputs.version }}\` in \'${{ matrix.environment }}\'" >> $GITHUB_OUTPUT
+          else
+            echo "COMMIT_MESSAGE=Bump \`${{ inputs.service }}\` to \`${{ github.sha }}\` in \'${{ matrix.environment }}\'" >> $GITHUB_OUTPUT
+          fi
+
       - name: Create Pull Request
         id: cpr
         # v3.14.0
@@ -93,8 +107,8 @@ jobs:
         with:
           path: ${{ inputs.working-directory }}
           token: ${{ steps.generate_token.outputs.token }}
-          commit-message: Bump ${{ inputs.service }} to ${{ github.sha }} in ${{ matrix.environment }}
-          title: Bump ${{ inputs.service }} to ${{ github.sha }} in ${{ matrix.environment }}
+          commit-message: ${{ steps.set-commit-message.outputs.COMMIT_MESSAGE }}
+          title: ${{ steps.set-commit-message.outputs.COMMIT_MESSAGE }}
           committer: GitHub <noreply@github.com>
           author: GitHub <noreply@github.com>
           branch: ${{ steps.set-branch-name.outputs.BRANCH }}
