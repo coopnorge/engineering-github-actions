@@ -65,6 +65,13 @@ jobs:
           app-id: 172868
           private-key: ${{ secrets.write-back-app-pem }}
           owner: coopnorge
+
+      - name: Get GitHub App User ID for the writeback to pr bot
+        id: get-user-id
+        run: echo "user-id=$(gh api "/users/${{ steps.generate_token.outputs.app-slug }}[bot]" --jq .id)" >> "$GITHUB_OUTPUT"
+        env:
+          GH_TOKEN: ${{ steps.generate_token.outputs.token }}
+
       - name: Clone the repostory
         # v3.0.0
         uses: actions/checkout@v4
@@ -107,10 +114,11 @@ jobs:
         with:
           path: ${{ inputs.working-directory }}
           token: ${{ steps.generate_token.outputs.token }}
+          sign-commits: true
           commit-message: ${{ steps.set-commit-message.outputs.COMMIT_MESSAGE }}
           title: ${{ steps.set-commit-message.outputs.COMMIT_MESSAGE }}
-          committer: GitHub <noreply@github.com>
-          author: GitHub <noreply@github.com>
+          committer: ${{ steps.generate_token.outputs.app-slug }}[bot] <${{ steps.get-user-id.outputs.user-id }}+${{ steps.generate_token.outputs.app-slug }}[bot]@users.noreply.github.com>
+          author: ${{ steps.generate_token.outputs.app-slug }}[bot] <${{ steps.get-user-id.outputs.user-id }}+${{ steps.generate_token.outputs.app-slug }}[bot]@users.noreply.github.com>
           branch: ${{ steps.set-branch-name.outputs.BRANCH }}
           delete-branch: true
           body: |
