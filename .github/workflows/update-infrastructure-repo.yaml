@@ -102,9 +102,9 @@ jobs:
         run: |
           if [ "${{ inputs.version }}" != "" ]
           then
-            echo "COMMIT_MESSAGE=Bump \`${{ inputs.service }}\` to version \`${{ inputs.version }}\` in \'${{ matrix.environment }}\'" >> $GITHUB_OUTPUT
+            echo "COMMIT_MESSAGE=Bump \`${{ inputs.service }}\` to version \`${{ inputs.version }}\` in \`${{ matrix.environment }}\`" >> $GITHUB_OUTPUT
           else
-            echo "COMMIT_MESSAGE=Bump \`${{ inputs.service }}\` to \`${{ github.sha }}\` in \'${{ matrix.environment }}\'" >> $GITHUB_OUTPUT
+            echo "COMMIT_MESSAGE=Bump \`${{ inputs.service }}\` to \`${{ github.sha }}\` in \`${{ matrix.environment }}\`" >> $GITHUB_OUTPUT
           fi
 
       - name: Create Pull Request
