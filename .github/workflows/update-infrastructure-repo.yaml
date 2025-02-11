@@ -110,7 +110,7 @@ jobs:
       - name: Create Pull Request
         id: cpr
         # v3.14.0
-        uses: peter-evans/create-pull-request@67ccf781d68cd99b580ae25a5c18a1cc84ffff1f
+        uses: peter-evans/create-pull-request@67ccf781d68cd99b580ae25a5c18a1cc84ffff1f # pin@67ccf781d68cd99b580ae25a5c18a1cc84ffff1f
         with:
           path: ${{ inputs.working-directory }}
           token: ${{ steps.generate_token.outputs.token }}
@@ -134,7 +134,7 @@ jobs:
       - name: Set pull request to auto-merge
         if: ${{ matrix.auto-merge == 'true' }}
         # v1.2.0
-        uses: peter-evans/enable-pull-request-automerge@a660677d5469627102a1c1e11409dd063606628d
+        uses: peter-evans/enable-pull-request-automerge@a660677d5469627102a1c1e11409dd063606628d # pin@a660677d5469627102a1c1e11409dd063606628d
         with:
           token: ${{ steps.generate_token.outputs.token }}
           pull-request-number: ${{ steps.cpr.outputs.pull-request-number }}
@@ -144,7 +144,7 @@ jobs:
       - name: Approve Pull Request
         if: ${{ matrix.auto-approve == 'true' }}
         # v1.1.1
-        uses: juliangruber/approve-pull-request-action@b71c44ff142895ba07fad34389f1938a4e8ee7b0
+        uses: juliangruber/approve-pull-request-action@b71c44ff142895ba07fad34389f1938a4e8ee7b0 # pin@b71c44ff142895ba07fad34389f1938a4e8ee7b0
         with:
           github-token: ${{ secrets.approve-pr-token }}
           number: ${{ steps.cpr.outputs.pull-request-number }}
