@@ -1,4 +1,3 @@
----
 name: Update Infrastructure Repo to reflect changes after merge
 on:
   workflow_call:
@@ -51,7 +50,7 @@ on:
 jobs:
   update-infrastructure:
     name: Update Infrastructure
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     strategy:
       matrix:
         include: ${{ fromJSON(inputs.environment-matrix-json) }}
