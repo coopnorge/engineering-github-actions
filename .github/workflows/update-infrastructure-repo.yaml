@@ -73,7 +73,7 @@ jobs:
 
       - name: Clone the repostory
         # v3.0.0
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           repository: ${{ inputs.source-github-repo }}
           ref: main
