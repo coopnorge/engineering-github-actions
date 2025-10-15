@@ -21,7 +21,8 @@ trap 'rm -rf "$workdir"' EXIT
 BODY_LIMIT=65000 # hard cap to stay under GitHub's PR body limit
 
 # Fetch current PR body
-gh pr view "$CURRENT_PR_NUMBER" --repo "$REPO" --json body --jq .body > "$workdir/current_body.md" || echo "" > "$workdir/current_body.md"
+current_body=$(gh pr view "$CURRENT_PR_NUMBER" --repo "$REPO" --json body --jq .body || echo "")
+echo "$current_body" > "$workdir/current_body.md"
 
 # Find prior PRs for same service/env (open, labeled, excluding current)
 gh pr list \
