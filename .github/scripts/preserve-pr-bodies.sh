@@ -66,10 +66,7 @@ fi
 
 # Combine: current body + blank lines + appended bodies
 # Keep under GitHub's PR body size limit without adding any extra text/markers
-current_len=$(wc -c < "$workdir/current_body.md" || echo 0)
 sep=$'\n\n'
-sep_len=${#sep}
-prior_len=$(wc -c < "$workdir/prior_bodies.md" || echo 0)
 
 cat "$workdir/current_body.md" > "$workdir/new_body.md"
 printf "%s" "$sep" >> "$workdir/new_body.md"
