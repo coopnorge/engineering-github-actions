@@ -70,20 +70,10 @@ sep=$'\n\n'
 sep_len=${#sep}
 prior_len=$(wc -c < "$workdir/prior_bodies.md" || echo 0)
 
-# If everything fits, append all
-if (( current_len + sep_len + prior_len <= BODY_LIMIT )); then
-    printf "%s" "$(cat "$workdir/current_body.md")" > "$workdir/new_body.md"
-    printf "%s" "$sep" >> "$workdir/new_body.md"
-    cat "$workdir/prior_bodies.md" >> "$workdir/new_body.md"
-else
-# Append as much as fits (may cut mid-body; no extra notes/markers)
-    printf "%s" "$(cat "$workdir/current_body.md")" > "$workdir/new_body.md"
-    if (( current_len + sep_len < BODY_LIMIT )); then
-        printf "%s" "$sep" >> "$workdir/new_body.md"
-        budget=$(( BODY_LIMIT - current_len - sep_len ))
-        head -c "$budget" "$workdir/prior_bodies.md" >> "$workdir/new_body.md" || true
-    fi
-fi
+cat "$workdir/current_body.md" > "$workdir/new_body.md"
+printf "%s" "$sep" >> "$workdir/new_body.md"
+cat "$workdir/prior_bodies.md" >> "$workdir/new_body.md"
+truncate -s "$BODY_LIMIT" "$workdir/new_body.md"
 
 # Update the PR body
 gh pr edit "$CURRENT_PR_NUMBER" --repo "$REPO" --body-file "$workdir/new_body.md"
