@@ -65,13 +65,17 @@ if [[ ! -s "$workdir/prior_bodies.md" ]]; then
 fi
 
 # Combine: current body + blank lines + appended bodies
-# Keep under GitHub's PR body size limit without adding any extra text/markers
 sep=$'\n\n'
 
 cat "$workdir/current_body.md" > "$workdir/new_body.md"
 printf "%s" "$sep" >> "$workdir/new_body.md"
 cat "$workdir/prior_bodies.md" >> "$workdir/new_body.md"
-truncate -s "$BODY_LIMIT" "$workdir/new_body.md"
+
+# Keep under GitHub's PR body size limit
+filesize=$(stat -c%s "$workdir/new_body.md")
+if (( filesize > BODY_LIMIT )); then
+    truncate -s "$BODY_LIMIT" "$workdir/new_body.md"
+fi
 
 # Sanitize to ensure valid UTF-8 (strip invalid sequences)
 iconv -f utf-8 -t utf-8 -c "$workdir/new_body.md" -o "$workdir/new_body.md"
