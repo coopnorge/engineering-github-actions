@@ -80,13 +80,9 @@ if (( filesize > BODY_LIMIT )); then
     truncate -s "$BODY_LIMIT" "$workdir/new_body.md"
 fi
 
-# Three different ways to sanitize:
+# When running on GitHub, some NUL bytes may have been introduced
 # Strip invalid UTF-8 bytes
 iconv -f utf-8 -t utf-8 -c "$workdir/new_body.md" -o "$workdir/new_body.md"
-# Explicitly remove the replacement character
-# sed -i 's/\xef\xbf\xbd//g' "$workdir/new_body.md"
-# Remove NUL bytes explicitly
-# tr -d '\000' < "$workdir/new_body.md" > "$workdir/new_body.nonul" && mv "$workdir/new_body.nonul" "$workdir/new_body.md"
 
 # Update the PR body
 gh pr edit "$CURRENT_PR_NUMBER" --repo "$REPO" --body-file "$workdir/new_body.md"

@@ -140,7 +140,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: coopnorge/engineering-github-actions
-          ref: fix/referers-ref
+          ref: main
           path: engineering-github-actions
 
       - name: Append prior PR bodies to current one
