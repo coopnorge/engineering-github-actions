@@ -154,12 +154,19 @@ jobs:
           number: ${{ steps.cpr.outputs.pull-request-number }}
           repo: ${{ inputs.source-github-repo }}
 
+      # Derive the ref that the caller used to invoke this reusable workflow
+      - name: Derive called workflow ref
+        id: workflowref
+        run: |
+          full="${{ github.workflow_ref }}"
+          ref="${full##*@}" # everything after the last '@'
+          echo "ref=$ref" >> "$GITHUB_OUTPUT"
       - name: Checkout engineering-github-actions to access scripts from caller
         if: ${{ inputs.preserve-closed-pr-bodies}}
         uses: actions/checkout@v4
         with:
           repository: coopnorge/engineering-github-actions
-          ref: ${{ github.workflow_sha }}
+          ref: ${{ steps.workflowref.outputs.ref }}
           path: engineering-github-actions
 
       - name: Append prior PR bodies to current one
