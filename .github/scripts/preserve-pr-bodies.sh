@@ -36,7 +36,10 @@ gh pr list \
 > "$workdir/open_prs.json"
 
 # Filter out current PR and sort oldest->newest so bodies read chronologically
-jq -c '[ .[] | select(.number != '"$CURRENT_PR_NUMBER"') ] | sort_by(.createdAt)' "$workdir/open_prs.json" > "$workdir/old_prs_sorted.json"
+jq -c \
+    '[ .[] | select(.number != '"$CURRENT_PR_NUMBER"') ] | sort_by(.createdAt)' \
+    "$workdir/open_prs.json" \
+    > "$workdir/old_prs_sorted.json"
 
 if [[ "$(jq 'length' "$workdir/old_prs_sorted.json")" -eq 0 ]]; then
     echo "No prior open PRs found for this service/environment. Nothing to append."
