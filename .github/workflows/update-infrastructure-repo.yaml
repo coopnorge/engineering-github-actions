@@ -155,6 +155,7 @@ jobs:
           repo: ${{ inputs.source-github-repo }}
 
       - name: Checkout engineering-github-actions to access scripts from caller
+        if: ${{ inputs.preserve-closed-pr-bodies}}
         uses: actions/checkout@v4
         with:
           repository: coopnorge/engineering-github-actions
