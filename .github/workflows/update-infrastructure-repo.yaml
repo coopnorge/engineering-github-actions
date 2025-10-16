@@ -135,6 +135,25 @@ jobs:
             service:${{ inputs.service }}
             environment:${{ matrix.environment }}
 
+      - name: Checkout engineering-github-actions to access scripts from caller
+        if: ${{ inputs.preserve-closed-pr-bodies}}
+        uses: actions/checkout@v4
+        with:
+          repository: coopnorge/engineering-github-actions
+          ref: fix/referers-ref
+          path: engineering-github-actions
+
+      - name: Append prior PR bodies to current one
+        if: ${{ inputs.preserve-closed-pr-bodies}}
+        env:
+          GH_TOKEN: ${{ steps.generate_token.outputs.token }}
+          REPO: ${{ github.server_url }}/${{ inputs.source-github-repo }}
+          CURRENT_PR_NUMBER: ${{ steps.cpr.outputs.pull-request-number }}
+          SERVICE: ${{ inputs.service }}
+          ENVIRONMENT: ${{ matrix.environment }}
+        run: engineering-github-actions/.github/scripts/preserve-pr-bodies.sh
+        shell: bash
+
       - name: Set pull request to auto-merge
         if: ${{ matrix.auto-merge == 'true' }}
         # v1.2.0
@@ -153,25 +172,6 @@ jobs:
           github-token: ${{ secrets.approve-pr-token }}
           number: ${{ steps.cpr.outputs.pull-request-number }}
           repo: ${{ inputs.source-github-repo }}
-
-      - name: Checkout engineering-github-actions to access scripts from caller
-        if: ${{ inputs.preserve-closed-pr-bodies}}
-        uses: actions/checkout@v4
-        with:
-          repository: coopnorge/engineering-github-actions
-          ref: ${{ env.GITHUB_WORKFLOW_SHA }}
-          path: engineering-github-actions
-
-      - name: Append prior PR bodies to current one
-        if: ${{ inputs.preserve-closed-pr-bodies}}
-        env:
-          GH_TOKEN: ${{ steps.generate_token.outputs.token }}
-          REPO: ${{ github.server_url }}/${{ inputs.source-github-repo }}
-          CURRENT_PR_NUMBER: ${{ steps.cpr.outputs.pull-request-number }}
-          SERVICE: ${{ inputs.service }}
-          ENVIRONMENT: ${{ matrix.environment }}
-        run: engineering-github-actions/.github/scripts/preserve-pr-bodies.sh
-        shell: bash
 
       - name: Close existing Pull-requests
         if: ${{ inputs.close-existing-prs }}
