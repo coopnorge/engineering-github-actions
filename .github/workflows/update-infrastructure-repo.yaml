@@ -29,7 +29,7 @@ on:
       service:
         required: false
         type: string
-        default: "service"
+        default: 'service'
       version:
         required: false
         type: string
@@ -39,6 +39,11 @@ on:
         type: boolean
         default: true
         description: If close-existing-prs is true, this workflow will look up existing open PR's for the same environment and service, and close them. This will leave you with only 1 PR per service/environment-combination.
+      preserve-closed-pr-bodies:
+        required: false
+        type: boolean
+        default: false
+        description: If preserve-pr-bodies is true, this workflow will append the bodies of any prior open PR's for the same environment and service to the body of the new PR. This allows you to preserve the context from PRs that will be closed.
 
     secrets:
       approve-pr-token:
@@ -148,6 +153,17 @@ jobs:
           github-token: ${{ secrets.approve-pr-token }}
           number: ${{ steps.cpr.outputs.pull-request-number }}
           repo: ${{ inputs.source-github-repo }}
+
+      - name: Append prior PR bodies to current one
+        if: ${{ inputs.preserve-closed-pr-bodies}}
+        env:
+          GH_TOKEN: ${{ steps.generate_token.outputs.token }}
+          REPO: ${{ github.server_url }}/${{ inputs.source-github-repo }}
+          CURRENT_PR_NUMBER: ${{ steps.cpr.outputs.pull-request-number }}
+          SERVICE: ${{ inputs.service }}
+          ENVIRONMENT: ${{ matrix.environment }}
+        run: .github/scripts/preserve-pr-bodies.sh
+        shell: bash
 
       - name: Close existing Pull-requests
         if: ${{ inputs.close-existing-prs }}
