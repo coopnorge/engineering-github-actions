@@ -18,7 +18,7 @@ fi
 workdir="$(mktemp -d)"
 trap 'rm -rf "$workdir"' EXIT
 
-BODY_LIMIT=65000 # hard cap to stay under GitHub's PR body limit
+BODY_LIMIT=65000 # hard cap to stay under GitHub's PR body limit in bytes
 
 # Fetch current PR body
 current_body=$(gh pr view "$CURRENT_PR_NUMBER" --repo "$REPO" --json body --jq .body || echo "")
@@ -72,6 +72,9 @@ cat "$workdir/current_body.md" > "$workdir/new_body.md"
 printf "%s" "$sep" >> "$workdir/new_body.md"
 cat "$workdir/prior_bodies.md" >> "$workdir/new_body.md"
 truncate -s "$BODY_LIMIT" "$workdir/new_body.md"
+
+# Sanitize to ensure valid UTF-8 (strip invalid sequences)
+iconv -f utf-8 -t utf-8 -c "$workdir/new_body.md" -o "$workdir/new_body.md"
 
 # Update the PR body
 gh pr edit "$CURRENT_PR_NUMBER" --repo "$REPO" --body-file "$workdir/new_body.md"
