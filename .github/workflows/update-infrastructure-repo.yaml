@@ -126,7 +126,7 @@ jobs:
           branch: ${{ steps.set-branch-name.outputs.BRANCH }}
           delete-branch: true
           body: |
-            Changes from ${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}
+            ### Changes from ${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}
 
             ${{ github.event.head_commit.message }}
 
