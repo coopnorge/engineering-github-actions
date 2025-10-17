@@ -82,7 +82,7 @@ fi
 
 # When running on GitHub, some NUL bytes may have been introduced
 # Strip invalid UTF-8 bytes
-iconv -f utf-8 -t utf-8 -c "$workdir/new_body.md" -o "$workdir/new_body.md"
+iconv -f utf-8 -t utf-8 -c "$workdir/new_body.md" -o "$workdir/trimmed_body.md"
 
 # Update the PR body
-gh pr edit "$CURRENT_PR_NUMBER" --repo "$REPO" --body-file "$workdir/new_body.md"
+gh pr edit "$CURRENT_PR_NUMBER" --repo "$REPO" --body-file "$workdir/trimmed_body.md"
