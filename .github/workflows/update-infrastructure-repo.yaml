@@ -137,7 +137,7 @@ jobs:
 
       - name: Checkout engineering-github-actions to access scripts from caller
         if: ${{ inputs.preserve-closed-pr-bodies}}
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           repository: coopnorge/engineering-github-actions
           ref: main
