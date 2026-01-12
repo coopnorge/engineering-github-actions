@@ -16,3 +16,4 @@ spec:
             - "build"
         requiredPullRequestReviews:
           requireCodeOwnerReviews: true
+  visibility: public
