@@ -63,7 +63,6 @@ jobs:
     steps:
       - name: Generate token for writeback to pr
         id: generate_token
-        # v1.5.1
         uses: actions/create-github-app-token@v2.2.1
         with:
           app-id: 172868
@@ -76,8 +75,7 @@ jobs:
         env:
           GH_TOKEN: ${{ steps.generate_token.outputs.token }}
 
-      - name: Clone the repostory
-        # v3.0.0
+      - name: Clone the repository
         uses: actions/checkout@v6
         with:
           repository: ${{ inputs.source-github-repo }}
@@ -113,8 +111,7 @@ jobs:
 
       - name: Create Pull Request
         id: cpr
-        # v3.14.0
-        uses: peter-evans/create-pull-request@98357b18bf14b5342f975ff684046ec3b2a07725 # 67ccf781d68cd99b580ae25a5c18a1cc84ffff1f
+        uses: peter-evans/create-pull-request@98357b18bf14b5342f975ff684046ec3b2a07725 # v8.0.0
         with:
           path: ${{ inputs.working-directory }}
           token: ${{ steps.generate_token.outputs.token }}
@@ -156,8 +153,7 @@ jobs:
 
       - name: Set pull request to auto-merge
         if: ${{ matrix.auto-merge == 'true' }}
-        # v1.2.0
-        uses: peter-evans/enable-pull-request-automerge@a660677d5469627102a1c1e11409dd063606628d # a660677d5469627102a1c1e11409dd063606628d
+        uses: peter-evans/enable-pull-request-automerge@a660677d5469627102a1c1e11409dd063606628d # v3.0.0
         with:
           token: ${{ steps.generate_token.outputs.token }}
           pull-request-number: ${{ steps.cpr.outputs.pull-request-number }}
@@ -166,8 +162,7 @@ jobs:
 
       - name: Approve Pull Request
         if: ${{ matrix.auto-approve == 'true' }}
-        # v1.1.1
-        uses: juliangruber/approve-pull-request-action@b71c44ff142895ba07fad34389f1938a4e8ee7b0 # b71c44ff142895ba07fad34389f1938a4e8ee7b0
+        uses: juliangruber/approve-pull-request-action@b71c44ff142895ba07fad34389f1938a4e8ee7b0 # v2.0.6
         with:
           github-token: ${{ secrets.approve-pr-token }}
           number: ${{ steps.cpr.outputs.pull-request-number }}
