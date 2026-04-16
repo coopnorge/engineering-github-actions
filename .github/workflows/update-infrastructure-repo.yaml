@@ -164,7 +164,7 @@ jobs:
         if: ${{ matrix.auto-approve == 'true' }}
         uses: juliangruber/approve-pull-request-action@68fcc9a5a73b5641cadf757cf99d73720dcb05d0 # v2.1.0
         with:
-          github-token: ${{ secrets.approve-pr-token }}
+          github-token: ${{ steps.generate_token.outputs.token }}
           number: ${{ steps.cpr.outputs.pull-request-number }}
           repo: ${{ inputs.source-github-repo }}
 
