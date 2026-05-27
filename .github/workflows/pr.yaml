@@ -4,7 +4,7 @@ on:
       - main
 jobs:
   build:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-slim
     permissions: {}
     steps:
       - run: echo "Hello, World"
