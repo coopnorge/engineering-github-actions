@@ -1,0 +1,13 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: engineering-github-actions
+  title: "Engineering GitHub Actions"
+  description: Shared engineering GitHub actions
+  tags: [github-action]
+  annotations:
+    github.com/project-slug: coopnorge/engineering-github-actions
+spec:
+  type: library
+  owner: engineering
+  lifecycle: production
